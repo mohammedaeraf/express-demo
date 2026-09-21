@@ -37,6 +37,33 @@ const students = [
   },
 ];
 
+app.get("/students/search", (request, response) => {
+  // Read the name from the query string, for example: /students/search?name=ash.
+  // Convert it to lowercase so the search is not affected by capitalization.
+  const name = request.query.name.toLowerCase();
+
+  // Find student with exact match (case ignored)
+  // const student = students.find(
+  //   (student) => student.name.toLowerCase() === name,
+  // );
+
+  // Return every student whose name contains the searched text.
+  // filter() returns an array, even when no students match the search.
+  const student = students.filter((student) =>
+    student.name.toLowerCase().includes(name),
+  );
+
+  // An empty array is truthy, so check its length to detect no matches.
+  if (student.length === 0) {
+    return response.status(404).json({
+      message: "Student not found",
+    });
+  }
+
+  // Send the matching students back to the client as JSON.
+  response.json(student);
+});
+
 // GET /students
 // Returns the complete list of students in JSON format.
 app.get("/students", (request, response) => {
