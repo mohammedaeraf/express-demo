@@ -7,6 +7,9 @@ const app = express();
 // Port is the number where our server will listen for requests.
 const PORT = 3000;
 
+// Parse JSON Request Bodies
+app.use(express.json());
+
 // Handle GET requests sent to the home route ("/").
 app.get("/", (request, response) => {
   response.send("Welcome to the Express JS Student API");
@@ -88,6 +91,33 @@ app.get("/students/:id", (request, response) => {
 
   // If the student exists, return the student data.
   return response.json(student);
+});
+
+// POST /students
+// Adds the new student record in the students array
+app.post("/students", (request, response) => {
+  const studentData = request.body;
+
+  // validation
+  if (!studentData.name || !studentData.course) {
+    return response.status(400).json({
+      message: "Student Name and Course are required",
+    });
+  }
+
+  const student = {
+    id: students.length + 1,
+    name: studentData.name,
+    course: studentData.course,
+  };
+
+  students.push(student);
+  
+  return response.status(201).json({
+    message: "Student record created successfully",
+    newRecord: student
+  });
+
 });
 
 // Start the server and keep it running to receive client requests.
