@@ -52,7 +52,7 @@ app.get("/students/search", (request, response) => {
 
   // Return every student whose name contains the searched text.
   // filter() returns an array, even when no students match the search.
-  const student = students.filter((student) =>
+  const searched_students = students.filter((student) =>
     student.name.toLowerCase().includes(name),
   );
 
@@ -64,7 +64,7 @@ app.get("/students/search", (request, response) => {
   }
 
   // Send the matching students back to the client as JSON.
-  response.json(student);
+  response.json(searched_students);
 });
 
 // GET /students
