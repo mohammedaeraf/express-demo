@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const Customer = require("../models/Customer");
+const validateCustomer = require("../middlewares/validateCustomer");
 
 // CRUD - Create, Read, Update and Delete
 
 // Create a customer and return the saved document with a 201 Created status.
-router.post("/", async (req, res) => {
+router.post("/", validateCustomer, async (req, res) => {
   try {
     const customer = new Customer(req.body);
     const savedCustomer = await customer.save();

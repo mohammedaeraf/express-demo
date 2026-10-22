@@ -19,6 +19,14 @@ app.listen(3000, () => {
   console.log("Express App running on port 3000");
 });
 
+// Logger Middleware
+const logger = (req, res, next) => {
+  console.log("Request recieved:", req.method, req.url, req.body);
+  next();
+}
+
+app.use(logger);
+
 const customerRoutes = require("./routes/customers.routes");
 app.use("/customers", customerRoutes)
 
