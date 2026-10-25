@@ -26,7 +26,18 @@ router.post("/", validateCustomer, async (req, res) => {
 // Return all customer documents from the database.
 router.get("/", async (req, res) => {
   try {
-    const customers = await Customer.find();
+    const query = req.query;
+
+    let filter = {};
+
+    if (query.name) {
+      filter.name = query.name;
+    }
+
+    console.log(filter);
+
+    // Customer.find() returns all records
+    const customers = await Customer.find(filter);
 
     res.status(200).json(customers);
   } catch (error) {
