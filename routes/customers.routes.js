@@ -23,7 +23,7 @@ router.post("/", validateCustomer, async (req, res) => {
   }
 });
 
-// Return all customer documents from the database.
+
 router.get("/", async (req, res) => {
   try {
     const query = req.query;
@@ -31,13 +31,19 @@ router.get("/", async (req, res) => {
     let filter = {};
 
     if (query.name) {
-      filter.name = query.name;
+      // Match names containing the query text, without case sensitivity.
+      filter.name = { $regex: query.name, $options: "i" };
+    }
+
+    if (query.creditLimit) {
+      // Include customers whose credit limit is at least the requested amount.
+      filter.creditLimit = { $gte: Number(query.creditLimit) };
     }
 
     console.log(filter);
 
-    // Customer.find() returns all records
-    const customers = await Customer.find(filter);
+    // Sort matching customers alphabetically by name.
+    const customers = await Customer.find(filter).sort({ name: 1 });
 
     res.status(200).json(customers);
   } catch (error) {
