@@ -23,29 +23,38 @@ router.post("/", validateCustomer, async (req, res) => {
   }
 });
 
-
 router.get("/", async (req, res) => {
   try {
     const query = req.query;
 
-    let filter = {};
+    const pageSize = query.limit || 10; // take default page size as 10
+    const skipRecords = query.skip || 0;
 
+    let filter = {};
     if (query.name) {
       // Match names containing the query text, without case sensitivity.
       filter.name = { $regex: query.name, $options: "i" };
     }
-
     if (query.creditLimit) {
       // Include customers whose credit limit is at least the requested amount.
       filter.creditLimit = { $gte: Number(query.creditLimit) };
     }
 
-    console.log(filter);
+    // fetch total number of customers from mongoDB
+    const totalCustomers = await Customer.countDocuments();
 
     // Sort matching customers alphabetically by name.
-    const customers = await Customer.find(filter).sort({ name: 1 });
+    const customers = await Customer.find(filter)
+      .limit(pageSize)
+      .skip(skipRecords)
+      .sort({ name: 1 });
 
-    res.status(200).json(customers);
+    res.status(200).json({
+      customers: customers,
+      total: totalCustomers,
+      skip: skipRecords,
+      limit: pageSize,
+    });
   } catch (error) {
     res.status(500).json({
       message: "Failed to fetch customers",
